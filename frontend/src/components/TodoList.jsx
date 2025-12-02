@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TodoForm from './TodoForm'; 
 
+// Import icons from React Icons (Material Design set)
+import { MdDelete, MdCheckCircle, MdOutlineRadioButtonUnchecked } from 'react-icons/md';
+
 // Define the base URL for your backend API
 const API_URL = 'http://localhost:5000/api/todos';
 
@@ -27,16 +30,17 @@ const TodoList = () => {
 
     // --- 2. CREATE (Handle new ToDo from TodoForm) ---
     const handleNewTodo = (newTodo) => {
+        // Add the new task to the top of the list
         setTodos((prevTodos) => [newTodo, ...prevTodos]);
     };
 
     // --- 3. DELETE (Remove a ToDo) ---
     const handleDelete = async (id) => {
         try {
-            // 1. Send DELETE request to the backend
+            // Send DELETE request to the backend
             await axios.delete(`${API_URL}/${id}`);
             
-            // 2. Update the frontend state by filtering out the deleted item
+            // Update state by filtering out the deleted item
             setTodos(prevTodos => prevTodos.filter(todo => todo._id !== id));
         } catch (err) {
             console.error('Failed to delete todo:', err);
@@ -48,12 +52,12 @@ const TodoList = () => {
         const newStatus = !currentCompletionStatus;
         
         try {
-            // 1. Send PATCH request with the new status
+            // Send PATCH request with the toggled status
             const response = await axios.patch(`${API_URL}/${todoId}`, { 
                 completed: newStatus 
             });
             
-            // 2. Update the frontend state with the new data from the server
+            // Update state by replacing the old task with the updated one from the server
             setTodos(prevTodos => 
                 prevTodos.map(todo => 
                     todo._id === todoId ? response.data : todo
@@ -84,23 +88,26 @@ const TodoList = () => {
                     <ul>
                         {todos.map((todo) => (
                             <li key={todo._id}>
-                                {/* Apply conditional styling (strike-through) based on completed status */}
+                                {/* Apply strike-through style if completed */}
                                 <span 
                                     style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
                                 >
                                     {todo.title}
                                 </span>
                                 
-                                {/* Delete Button */}
+                                {/* 1. Delete Button */}
                                 <button onClick={() => handleDelete(todo._id)}>
-                                    Delete 🗑️
+                                    <MdDelete size={20} /> 
                                 </button>
                                 
-                                {/* Update Button (Toggle Complete/Incomplete) */}
+                                {/* 2. Update Button (Toggle Complete/Incomplete Icons) */}
                                 <button 
                                     onClick={() => handleUpdate(todo._id, todo.completed)}
                                 >
-                                    {todo.completed ? 'Mark Incomplete' : 'Mark Complete'} ✅
+                                    {todo.completed 
+                                        ? <MdOutlineRadioButtonUnchecked size={20} /> 
+                                        : <MdCheckCircle size={20} />
+                                    } 
                                 </button>
                             </li>
                         ))}
