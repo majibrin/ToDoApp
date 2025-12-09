@@ -1,95 +1,121 @@
-import Todo from '../models/todoModel.js';
-import mongoose from 'mongoose';
+// backend/controllers/todoController.js (FINAL ES MODULE VERSION)
 
-// --- 1. GET all ToDos (READ - Plural) ---
+import Todo from '../models/todoModel.js'; // <-- FIX: Added .js
+import mongoose from "mongoose";
+
+// ===================================
+// GET all todos for a specific user
+// ===================================
 const getTodos = async (req, res) => {
-    // Finds all documents, sorted by newest first (createdAt: -1)
-    const todos = await Todo.find({}).sort({ createdAt: -1 });
+    // The requireAuth middleware attached the user's ID to the request object.
+    const user_id = req.user_id; 
+
+    // Find ONLY the documents (todos) that match that user_id.
+    const todos = await Todo.find({ user_id }).sort({ createdAt: -1 });
+
     res.status(200).json(todos);
 };
 
-// --- 2. GET a single ToDo (READ - Singular) ---
+// ===================================
+// GET a single todo
+// ===================================
 const getTodo = async (req, res) => {
-    const { id } = req.params; // Get the ID from the URL
+    const { id } = req.params;
 
-    // Validate the ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'Invalid ToDo ID format' });
+        return res.status(404).json({ error: 'No such todo' });
     }
 
-    // Find the single document by its ID
-    const todo = await Todo.findById(id);
+    const user_id = req.user_id;
+
+    // Find by ID and ensure it belongs to the authenticated user
+    const todo = await Todo.findOne({ _id: id, user_id }); 
 
     if (!todo) {
-        return res.status(404).json({ error: 'ToDo not found' });
+        return res.status(404).json({ error: 'No such todo found for this user' });
     }
 
     res.status(200).json(todo);
 };
 
-// --- 3. POST a new ToDo (CREATE) ---
+// ===================================
+// POST a new todo
+// ===================================
 const createTodo = async (req, res) => {
-    const { title, description } = req.body; 
+    const { title, description } = req.body;
 
-    // Simple validation
+    // Basic validation
     if (!title) {
-        return res.status(400).json({ error: 'A title is required for the ToDo.' });
+        return res.status(400).json({ error: 'Please enter a title for the task.' });
     }
+    
+    // The requireAuth middleware attached the user's ID to the request object.
+    const user_id = req.user_id; 
 
     try {
-        // Create a new document in the database
-        const todo = await Todo.create({ title, description });
-        res.status(201).json(todo); // 201 status code means "Created"
+        // Create the new Todo and critically INCLUDE the user_id
+        const todo = await Todo.create({ title, description, user_id }); 
+        res.status(200).json(todo);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
-// --- 4. PATCH/PUT a ToDo (UPDATE) ---
-const updateTodo = async (req, res) => {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'Invalid ToDo ID' });
-    }
-
-    // Find by ID and update the fields provided in req.body. { new: true } returns the updated document.
-    const todo = await Todo.findByIdAndUpdate(
-        { _id: id },
-        { ...req.body },
-        { new: true } 
-    );
-
-    if (!todo) {
-        return res.status(404).json({ error: 'ToDo not found' });
-    }
-    res.status(200).json(todo);
-};
-
-// --- 5. DELETE a ToDo (DELETE) ---
+// ===================================
+// DELETE a todo
+// ===================================
 const deleteTodo = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'Invalid ToDo ID' });
+        return res.status(404).json({ error: 'No such todo' });
     }
 
-    // Find by ID and delete the document
-    const todo = await Todo.findByIdAndDelete({ _id: id });
+    const user_id = req.user_id;
+
+    // Find by ID and ensure it belongs to the user before deleting
+    const todo = await Todo.findOneAndDelete({ _id: id, user_id });
 
     if (!todo) {
-        return res.status(404).json({ error: 'ToDo not found' });
+        return res.status(404).json({ error: 'No such todo found for this user' });
     }
-    res.status(200).json({ message: 'ToDo successfully deleted', deletedTodo: todo });
+
+    res.status(200).json(todo);
+};
+
+// ===================================
+// UPDATE a todo (Patch/Toggle Complete)
+// ===================================
+const updateTodo = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such todo' });
+    }
+
+    const user_id = req.user_id;
+    
+    // Find by ID and ensure it belongs to the user before updating
+    const todo = await Todo.findOneAndUpdate(
+        { _id: id, user_id }, 
+        { ...req.body }, 
+        { new: true }
+    );
+
+    if (!todo) {
+        return res.status(404).json({ error: 'No such todo found for this user' });
+    }
+
+    res.status(200).json(todo);
 };
 
 
-// --- FINAL EXPORT ---
-// This ensures that all functions, including 'getTodo', are available for import in todoRoutes.js
+// FIX: Changed 'exports =' to 'export default' or 'export const'
+// Since you want to export multiple named functions, use this:
 export {
     getTodos,
-    getTodo, // <-- The previously missing function
+    getTodo,
     createTodo,
-    updateTodo,
-    deleteTodo
+    deleteTodo,
+    updateTodo
 };

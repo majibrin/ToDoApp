@@ -8,9 +8,13 @@ import {
     deleteTodo 
 } from '../controllers/todoController.js'; 
 
+import requireAuth from '../middleware/requireAuth.js';
+
 const router = express.Router();
 
 // Define the routes:
+
+router.use(requireAuth);
 
 // GET /api/todos    -> Fetch all ToDos
 router.get('/', getTodos);

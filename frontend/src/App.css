@@ -1,14 +1,90 @@
-/* frontend/src/App.css */
+/* frontend/src/App.css (FINAL COMPLETE FILE) */
 
-.todo-container {
-  width: 100%;
-  max-width: 600px;
-  padding: 30px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+/* ---------------------------------------------------- */
+/* 1. LAYOUT & PAGES */
+/* ---------------------------------------------------- */
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
+.pages {
+  max-width: 1200px;
+  padding: 20px;
+  margin: 0 auto;
+  flex-grow: 1; 
+  display: flex;
+  justify-content: center; /* Center the content card horizontally */
+  width: 100%; /* Ensure it spans the width for max-width centering */
+}
+
+.todo-container, .signup, .login {
+    /* Styles for the main content card */
+    width: 100%;
+    max-width: 450px; /* Default limit for forms and todo list */
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+.todo-container {
+    max-width: 600px; /* Slightly wider for the main list */
+}
+
+/* ---------------------------------------------------- */
+/* 2. NAVBAR STYLING */
+/* ---------------------------------------------------- */
+header {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+header .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+header a {
+  color: var(--dark-text);
+  text-decoration: none;
+}
+header h1 {
+  color: var(--primary-color); 
+  font-size: 1.5em;
+  margin: 0;
+}
+
+/* Nav links and user info on the right */
+nav {
+  display: flex;
+  align-items: center;
+}
+nav a, nav button {
+  margin-left: 10px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  background: #fff;
+  color: var(--dark-text);
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+nav a:hover, nav button:hover {
+    background-color: var(--light-bg);
+}
+nav span {
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+
+/* ---------------------------------------------------- */
+/* 3. HEADINGS & HR */
+/* ---------------------------------------------------- */
 h1 {
   text-align: center;
   color: var(--primary-color);
@@ -30,22 +106,32 @@ hr {
     margin: 25px 0;
 }
 
-/* --- FORM STYLING --- */
+/* ---------------------------------------------------- */
+/* 4. FORM & INPUT STYLING (Used by TodoForm, Login, Signup) */
+/* ---------------------------------------------------- */
 form {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-input[type="text"] {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
-  transition: border-color 0.3s;
+label {
+    margin-top: 10px;
+    font-weight: 500;
 }
 
-input[type="text"]:focus {
+input {
+    /* Target all input types in forms */
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+input:focus {
   border-color: var(--primary-color);
   outline: none;
 }
@@ -59,7 +145,8 @@ form button {
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, opacity 0.3s;
+  width: 100%;
 }
 
 form button:hover:not(:disabled) {
@@ -69,9 +156,24 @@ form button:hover:not(:disabled) {
 form button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+  opacity: 1; /* Keep consistent visual for disabled state */
 }
 
-/* --- LIST STYLING --- */
+/* Error message styling */
+div.error {
+  padding: 10px;
+  background: #ffefef;
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+  border-radius: 4px;
+  margin: 10px 0;
+  text-align: center;
+}
+
+
+/* ---------------------------------------------------- */
+/* 5. LIST STYLING (TodoList) */
+/* ---------------------------------------------------- */
 .todos-list h2 {
     font-size: 1.5rem;
     margin-bottom: 15px;
@@ -82,6 +184,7 @@ form button:disabled {
 
 .todos-list ul {
   list-style: none;
+  padding: 0;
 }
 
 .todos-list li {
@@ -101,31 +204,29 @@ form button:disabled {
   font-weight: 400;
   margin-right: 15px;
   word-break: break-word;
+  transition: text-decoration 0.3s;
 }
 
-/* Action Buttons */
+/* Action Buttons (Icon Wrappers) */
 .todos-list li button {
-  margin-left: 10px;
-  padding: 8px 12px;
+  background: none;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: opacity 0.3s;
+  margin-left: 5px; /* Reduced margin for closer icons */
+  padding: 5px;
+  transition: color 0.3s;
+}
+
+/* Delete Button Specific (First icon button) */
+.todos-list li button:first-of-type { 
+  color: var(--error-color); 
+}
+
+/* Complete/Toggle Button Specific (Last icon button) */
+.todos-list li button:last-child { 
+  color: #1E88E5; /* Blue */
 }
 
 .todos-list li button:hover {
-    opacity: 0.8;
-}
-
-/* Delete Button Specific */
-.todos-list li button:nth-child(2) {
-  background-color: var(--error-color);
-  color: white;
-}
-
-/* Complete Button Specific */
-.todos-list li button:last-child {
-  background-color: #1E88E5; /* Blue */
-  color: white;
+  opacity: 0.8;
 }

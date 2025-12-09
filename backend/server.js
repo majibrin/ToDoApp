@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import todoRoutes from './routes/todoRoutes.js'; 
+import userRoutes from './routes/userRoutes.js'; 
 
 // --- 1. Configuration Variables ---
 const PORT = process.env.PORT || 5000;
@@ -22,6 +23,8 @@ app.use(cors());
 // --- 4. Routes ---
 // Use the ToDo routes for any requests starting with /api/todos
 app.use('/api/todos', todoRoutes); 
+// --- NEW: Use the User routes for authentication ---
+app.use('/api/user', userRoutes);
 
 // --- NEW: Simple Root Route for Server Health Check ---
 app.get('/', (req, res) => {

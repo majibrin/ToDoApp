@@ -1,31 +1,19 @@
-/* frontend/src/index.css */
+/* frontend/src/index.css (REQUIRED GLOBAL STYLES) */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
+/* --- DEFINE GLOBAL CSS VARIABLES --- */
 :root {
-  --primary-color: #4CAF50; /* Green */
-  --secondary-color: #388E3C; /* Darker Green */
-  --light-bg: #f5f5f5;
-  --dark-text: #333;
-  --error-color: #D32F2F;
+  --primary-color: #1aac83; /* Main Green */
+  --secondary-color: #158b6e; /* Hover Green */
+  --error-color: #e7195a;  /* Red */
+  --dark-text: #333; /* Dark color for main text */
+  --light-bg: #f5f5f5; /* Light background for list items */
+  --light-page-bg: #f1f1f1; /* Very light background for the page */
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* Base Reset */
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--light-bg);
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--light-page-bg); 
   color: var(--dark-text);
-}
-
-.App {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 20px;
-  min-height: 100vh;
 }
